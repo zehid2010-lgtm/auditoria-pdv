@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Auditoría PDV – Foto de Éxito (Offline)</title>
+
+<style>
+  :root{--b:#e7e7e7;--bg:#f4f6f8;--t:#111;--m:#666;--ok:#0f9d58;--bad:#db4437;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--t);}
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--b);padding:12px 14px;z-index:10}
+  h1{font-size:16px;margin:0 0 4px}
+  .sub{font-size:12px;color:var(--m)}
+  main{max-width:980px;margin:0 auto;padding:14px}
+  .card{background:#fff;border:1px solid var(--b);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+  label{grid-column:span 6;font-size:12px;color:var(--m)}
+  input,textarea{width:100%;margin-top:6px;padding:10px 12px;border-radius:12px;border:1px solid var(--b);font-size:14px;background:#fff;color:var(--t)}
+  textarea{min-height:90px;resize:vertical}
+  @media (max-width:820px){label{grid-column:span 12}}
+  .hint{font-size:12px;color:var(--m);line-height:1.35}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  button{padding:12px 14px;border-radius:14px;border:1px solid var(--b);background:#fff;font-weight:900;cursor:pointer}
+  button.primary{background:#111;color:#fff;border-color:#111}
+  button.ghost{background:#f1f1f1}
+
+  details{border:1px solid var(--b);border-radius:14px;padding:10px;background:#fcfcfc;margin:10px 0}
+  summary{cursor:pointer;font-weight:900;font-size:13px}
+  .item{border:1px solid var(--b);border-radius:12px;background:#fff;padding:10px;margin-top:8px}
+  .row{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+  .txt b{display:block;font-size:13px}
+  .txt small{display:block;color:var(--m);font-size:12px;margin-top:2px}
+
+  .seg{display:flex;border:1px solid var(--b);border-radius:999px;overflow:hidden;flex-shrink:0}
+  .seg button{border:0;background:#fff;padding:8px 10px;font-weight:900;font-size:12px;cursor:pointer}
+  .seg button + button{border-left:1px solid var(--b)}
+  .seg button.active.no{background:var(--bad);color:#fff}
+  .seg button.active.yes{background:var(--ok);color:#fff}
+
+  .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  @media (max-width:900px){.photos{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:620px){.photos{grid-template-columns:1fr}}
+  .photo{border:1px dashed #cfcfcf;border-radius:14px;padding:10px;background:#fff}
+  .photo .t{font-size:12px;font-weight:900;color:#333;margin-bottom:8px}
+  .thumb{width:100%;border-radius:12px;border:1px solid var(--b);display:none;margin-top:8px}
+
+  pre{white-space:pre-wrap;background:#0b0b0b;color:#eaeaea;border:1px solid #222;border-radius:14px;padding:12px;max-height:520px;overflow:auto;font-size:12px}
+
+  @media print{
+    header,.no-print{display:none !important}
+    body{background:#fff}
+    .card{box-shadow:none}
+    pre{max-height:none}
+    .thumb{display:block !important}
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <h1>Auditoría PDV – Foto de Éxito (Offline)</h1>
+  <div class="sub">Checklist Sí/No • Evidencia fotográfica • Puntos de conexión • PDF con Imprimir</div>
+</header>
+
+<main>
+
+  <!-- DATOS -->
+  <div class="card">
+    <div style="font-weight:900">Datos</div>
+    <div class="hint">Completá cliente + responsables. El informe genera desvíos por cada “No” y agrega compromiso.</div>
+
+    <div class="grid" style="margin-top:10px">
+      <label>Cliente<input id="cliente" type="text" placeholder="Ej: LUCE PAN"></label>
+      <label>Código<input id="codigo" type="text" placeholder="Ej: 3198663"></label>
+
+      <label>Ruta<input id="ruta" type="text" placeholder="Ej: 3141"></label>
+      <label>Auditor<input id="auditor" type="text" placeholder="Ej: Richard"></label>
+
+      <label>Vendedor Base<input id="base" type="text" placeholder="Ej: Pablo Ibarra"></label>
+      <label>Desarrollo<input id="desarrollo" type="text" placeholder="Ej: Patricio Murillo"></label>
+
+      <label>Agente Ejecución<input id="ejecucion" type="text" placeholder="Ej: Gastón Cabrera"></label>
+      <label>Fecha visita<input id="fechaVisita" type="date"></label>
+
+      <label>Fecha compromiso<input id="fechaCompromiso" type="date"></label>
+    </div>
+  </div>
+
+  <!-- EVIDENCIA -->
+  <div class="card">
+    <div style="font-weight:900">Evidencia fotográfica</div>
+    <div class="hint">En celular: “Tomar foto” abre cámara. En PC puede abrir selector de archivos (normal).</div>
+
+    <div class="photos no-print">
+      <div class="photo">
+        <div class="t">1) Ingreso / Afiches (FDE)</div>
+        <button type="button" class="ghost takePhoto">📷 Tomar foto</button>
+        <input class="ph" data-name="Ingreso_Afiches" type="file" accept="image/*" capture="environment" style="display:none">
+        <img class="thumb" alt="Foto 1">
+      </div>
+      <div class="photo">
+        <div class="t">2) EDF frontal completo</div>
+        <button type="button" class="ghost takePhoto">📷 Tomar foto</button>
+        <input class="ph" data-name="EDF_Frontal" type="file" accept="image/*" capture="environment" style="display:none">
+        <img class="thumb" alt="Foto 2">
+      </div>
+      <div class="photo">
+        <div class="t">3) 1ª posición (detalle)</div>
+        <button type="button" class="ghost takePhoto">📷 Tomar foto</button>
+        <input class="ph" data-name="Primera_Posicion" type="file" accept="image/*" capture="environment" style="display:none">
+        <img class="thumb" alt="Foto 3">
+      </div>
+      <div class="photo">
+        <div class="t">4) Precios en EDF (detalle)</div>
+        <button type="button" class="ghost takePhoto">📷 Tomar foto</button>
+        <input class="ph" data-name="Precios_EDF" type="file" accept="image/*" capture="environment" style="display:none">
+        <img class="thumb" alt="Foto 4">
+      </div>
+      <div class="photo">
+        <div class="t">5) Estrategias / EPV</div>
+        <button type="button" class="ghost takePhoto">📷 Tomar foto</button>
+        <input class="ph" data-name="EPV_Estrategias" type="file" accept="image/*" capture="environment" style="display:none">
+        <img class="thumb" alt="Foto 5">
+      </div>
+      <div class="photo">
+        <div class="t">6) Mostrador + Conexiones</div>
+        <button type="button" class="ghost takePhoto">📷 Tomar foto</button>
+        <input class="ph" data-name="Mostrador_Conexiones" type="file" accept="image/*" capture="environment" style="display:none">
+        <img class="thumb" alt="Foto 6">
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST COMPLETO 1..8 -->
+  <div class="card">
+    <div style="font-weight:900">Checklist Sí/No (Foto de Éxito)</div>
+    <div class="hint">Marcá Sí/No. Todo “No” se transforma en desvío + acción en el informe.</div>
+
+    <!-- 1 -->
+    <details open class="section" data-section="1) Ingreso al PDV – Afiches (Foto de Éxito)">
+      <summary>1) Ingreso al PDV – Afiches (Foto de Éxito)</summary>
+
+      <div class="item" data-action="Colocar afiche Coca según Foto de Éxito y asegurar visibilidad al ingreso." data-item>
+        <div class="row">
+          <div class="txt"><b>Afiche Coca visible según FDE</b><small>Al ingresar se identifica comunicación Coca.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Colocar afiche Stills según Foto de Éxito y asegurar visibilidad al ingreso." data-item>
+        <div class="row">
+          <div class="txt"><b>Afiche Stills visible según FDE</b><small>Comunicación Stills al ingreso.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Reemplazar material vencido/dañado y normalizar afiches vigentes y en buen estado." data-item>
+        <div class="row">
+          <div class="txt"><b>Afiches vigentes y en buen estado</b><small>Sin roturas ni piezas viejas.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 2 -->
+    <details open class="section" data-section="2) Equipos de Frío – Primera Posición">
+      <summary>2) Equipos de Frío – Primera Posición</summary>
+
+      <div class="item" data-action="Reordenar EDF para asegurar primera posición de acuerdo al estándar." data-item>
+        <div class="row">
+          <div class="txt"><b>Tiene primera posición en EDF</b><small>Primera bandeja/posición según estándar.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Ajustar mix de primera posición (mix objetivo) según lámina/lineamiento." data-item>
+        <div class="row">
+          <div class="txt"><b>Respeta mix de primera posición</b><small>Según tu lámina (mix objetivo).</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 3 -->
+    <details open class="section" data-section="3) Equipos de Frío – Precios">
+      <summary>3) Equipos de Frío – Precios</summary>
+
+      <div class="item" data-action="Colocar precio visible en EDF para que sea claramente legible." data-item>
+        <div class="row">
+          <div class="txt"><b>Precio visible en EDF</b><small>Que se vea claramente para el shopper.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Actualizar precios según lista/promo vigente y corregir desvíos detectados." data-item>
+        <div class="row">
+          <div class="txt"><b>Precio correcto / actualizado</b><small>Sin desvíos vs lista/promo.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 4 -->
+    <details open class="section" data-section="4) Estrategias (EPV) – 1 / 2 / 3">
+      <summary>4) Estrategias (EPV) – 1 / 2 / 3</summary>
+
+      <div class="item" data-action="Implementar Estrategia 1 (consumo personal) según Foto de Éxito." data-item>
+        <div class="row">
+          <div class="txt"><b>Estrategia 1 aplicada</b><small>Consumo personal según Foto de Éxito.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Implementar Estrategia 2 (Powerade) si corresponde al PDV y asegurar comunicación." data-item>
+        <div class="row">
+          <div class="txt"><b>Estrategia 2 aplicada</b><small>Powerade (si corresponde al PDV).</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Implementar Estrategia 3 (tapas gaseosas) si aplica y asegurar exhibición/comunicación." data-item>
+        <div class="row">
+          <div class="txt"><b>Estrategia 3 aplicada</b><small>Tapas gaseosas (si aplica).</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 5 -->
+    <details open class="section" data-section="5) Planograma (según puertas del EDF)">
+      <summary>5) Planograma (según puertas del EDF)</summary>
+
+      <div class="item" data-action="Ordenar EDF según planograma correspondiente a cantidad de puertas (1/2/3/4/5)." data-item>
+        <div class="row">
+          <div class="txt"><b>Cumple planograma según puertas</b><small>1/2/3/4/5 puertas.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6 -->
+    <details open class="section" data-section="6) Mostrador (lámina mostrador)">
+      <summary>6) Mostrador (lámina mostrador)</summary>
+
+      <div class="item" data-action="Ajustar mostrador según lámina: solo combos/estrategia permitida, sin extras." data-item>
+        <div class="row">
+          <div class="txt"><b>Mostrador cumple lámina</b><small>Con lo que pide el estándar.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Ordenar mostrador y corregir comunicación: sin saturación ni material viejo." data-item>
+        <div class="row">
+          <div class="txt"><b>Orden y comunicación correcta</b><small>Sin saturación ni material viejo.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 7 -->
+    <details open class="section" data-section="7) Precios sugeridos (cumplimiento)">
+      <summary>7) Precios sugeridos (cumplimiento)</summary>
+
+      <div class="item" data-action="Alinear precios exhibidos a sugeridos; corregir desvíos y reforzar control." data-item>
+        <div class="row">
+          <div class="txt"><b>Respeta precios sugeridos</b><small>Precio exhibido vs sugerido.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Colocar precios visibles en todos los puntos (EDF + exhibiciones del PDV)." data-item>
+        <div class="row">
+          <div class="txt"><b>Precios visibles en todos los puntos</b><small>EDF + exhibiciones del PDV.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 8 -->
+    <details open class="section" data-section="8) Puntos de conexión (BONUS) – Puntera / Rack / Isla">
+      <summary>8) Puntos de conexión (BONUS) – Puntera / Rack / Isla</summary>
+
+      <div class="item" data-action="Ejecutar puntera como punto de conexión adicional según lineamiento." data-item>
+        <div class="row">
+          <div class="txt"><b>Puntera ejecutada</b><small>Si está, suma conexión adicional.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Ejecutar rack como punto de conexión adicional según lineamiento." data-item>
+        <div class="row">
+          <div class="txt"><b>Rack ejecutado</b><small>Si está, suma conexión adicional.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item" data-action="Ejecutar isla como punto de conexión adicional según lineamiento." data-item>
+        <div class="row">
+          <div class="txt"><b>Isla ejecutada</b><small>Si está, suma conexión adicional.</small></div>
+          <div class="seg" data-value="no">
+            <button class="active no" data-set="no">No</button><button data-set="yes">Sí</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <label class="no-print" style="grid-column:span 12">Observaciones / Evidencia (texto)
+      <textarea id="obs" placeholder="Ej: competencia en 1ª posición, falta afiche Stills, precio no visible, planograma desordenado..."></textarea>
+    </label>
+
+    <div class="actions no-print">
+      <button class="primary" id="gen">Generar informe</button>
+      <button class="ghost" id="copy">Copiar informe</button>
+      <button class="ghost" id="pdf">Imprimir / Guardar PDF</button>
+      <button class="ghost" id="reset">Nueva auditoría</button>
+    </div>
+  </div>
+
+  <!-- INFORME -->
+  <div class="card">
+    <div style="font-weight:900">Informe</div>
+    <pre id="out">Todavía no generaste el informe.</pre>
+  </div>
+
+</main>
+
+<script>
+  const $ = (id)=>document.getElementById(id);
+
+  function todayISO(){
+    const d=new Date(); const off=d.getTimezoneOffset();
+    const local=new Date(d.getTime()-off*60*1000);
+    return local.toISOString().slice(0,10);
+  }
+  $("fechaVisita").value = todayISO();
+  $("fechaCompromiso").value = todayISO();
+
+  // Si/No default NO (sin N/A)
+  document.querySelectorAll(".seg").forEach(seg=>{
+    seg.dataset.value="no";
+    seg.querySelectorAll("button").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        seg.dataset.value = btn.dataset.set;
+        seg.querySelectorAll("button").forEach(b=>b.classList.remove("active","yes","no"));
+        btn.classList.add("active", btn.dataset.set);
+      });
+    });
+  });
+
+  // Abrir cámara / archivo (botón -> input oculto)
+  document.querySelectorAll(".takePhoto").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const input = btn.parentElement.querySelector(".ph");
+      if(input) input.click();
+    });
+  });
+
+  // Preview foto
+  const photoState = {};
+  document.querySelectorAll(".ph").forEach(inp=>{
+    inp.addEventListener("change", ()=>{
+      const f = inp.files && inp.files[0];
+      if(!f) return;
+      const key = inp.dataset.name;
+      const r = new FileReader();
+      r.onload = ()=>{
+        photoState[key]=r.result;
+        const img = inp.parentElement.querySelector(".thumb");
+        img.src=r.result;
+        img.style.display="block";
+      };
+      r.readAsDataURL(f);
+    });
+  });
+
+  function buildReport(){
+    const meta = {
+      cliente: $("cliente").value.trim() || "—",
+      codigo: $("codigo").value.trim() || "—",
+      ruta: $("ruta").value.trim() || "—",
+      auditor: $("auditor").value.trim() || "—",
+      base: $("base").value.trim() || "—",
+      desarrollo: $("desarrollo").value.trim() || "—",
+      ejecucion: $("ejecucion").value.trim() || "—",
+      fechaVisita: $("fechaVisita").value || "—",
+      fechaCompromiso: $("fechaCompromiso").value || "—",
+      obs: $("obs").value.trim() || "—",
+    };
+
+    // Desvíos = todo lo que esté en NO
+    const desvios = [];
+    document.querySelectorAll(".section").forEach(sec=>{
+      const sectionName = sec.dataset.section || "General";
+      sec.querySelectorAll("[data-item]").forEach(it=>{
+        const v = it.querySelector(".seg")?.dataset.value || "no";
+        if(v !== "no") return;
+        const title = it.querySelector(".txt b")?.textContent?.trim() || "Punto";
+        const action = it.dataset.action || "";
+        desvios.push({sectionName, title, action});
+      });
+    });
+
+    const evidencia = [
+      ["Ingreso_Afiches","1) Ingreso / Afiches (FDE)"],
+      ["EDF_Frontal","2) EDF frontal completo"],
+      ["Primera_Posicion","3) 1ª posición (detalle)"],
+      ["Precios_EDF","4) Precios en EDF (detalle)"],
+      ["EPV_Estrategias","5) Estrategias / EPV"],
+      ["Mostrador_Conexiones","6) Mostrador + Conexiones"],
+    ].map(([k,l])=>`- ${l}: ${photoState[k] ? "Adjunta" : "No adjunta"}`).join("\n");
+
+    const lines=[];
+    lines.push(`INFORME AUDITORÍA PDV – FOTO DE ÉXITO\n`);
+    lines.push(`- Fecha visita: ${meta.fechaVisita}`);
+    lines.push(`- Auditor: ${meta.auditor}`);
+    lines.push(`- Ruta: ${meta.ruta}\n`);
+
+    lines.push(`Cliente: ${meta.cliente} | Código: ${meta.codigo}`);
+    lines.push(`Responsables: Base ${meta.base} | Desarrollo ${meta.desarrollo} | Ejecución ${meta.ejecucion}\n`);
+
+    lines.push(`EVIDENCIA FOTOGRÁFICA:`);
+    lines.push(evidencia + "\n");
+
+    lines.push(`DESVÍOS (NO CUMPLE) + ACCIONES:`);
+    if(!desvios.length){
+      lines.push(`- Sin desvíos. Mantener ejecución y continuidad.\n`);
+    }else{
+      const by = {};
+      desvios.forEach(d => (by[d.sectionName] ||= []).push(d));
+      Object.keys(by).forEach(sec=>{
+        lines.push(`- ${sec}`);
+        by[sec].forEach(d=>{
+          lines.push(`  • ${d.title}`);
+          if(d.action) lines.push(`    Acción: ${d.action}`);
+        });
+      });
+      lines.push("");
+    }
+
+    lines.push(`OBSERVACIONES:`);
+    lines.push(meta.obs + "\n");
+
+    lines.push(`COMPROMISO DE MEJORA:`);
+    lines.push(`Se acuerda corregir los desvíos informados antes del ${meta.fechaCompromiso}.`);
+    lines.push(`Seguimiento en próxima visita con evidencia fotográfica de cierre.`);
+
+    return lines.join("\n");
+  }
+
+  $("gen").addEventListener("click", ()=>{ $("out").textContent = buildReport(); });
+
+  $("copy").addEventListener("click", async ()=>{
+    const txt = $("out").textContent || "";
+    try{ await navigator.clipboard.writeText(txt); alert("Copiado ✅"); }
+    catch{ alert("No pude copiar automático. Seleccioná y copiá manual."); }
+  });
+
+  $("pdf").addEventListener("click", ()=>window.print());
+
+  $("reset").addEventListener("click", ()=>{
+    if(!confirm("¿Nueva auditoría? Se borran datos, checks y fotos.")) return;
+
+    // inputs
+    ["cliente","codigo","ruta","auditor","base","desarrollo","ejecucion","obs"].forEach(id=>$(id).value="");
+    $("fechaVisita").value = todayISO();
+    $("fechaCompromiso").value = todayISO();
+
+    // checks a NO
+    document.querySelectorAll(".seg").forEach(seg=>{
+      seg.dataset.value="no";
+      seg.querySelectorAll("button").forEach(b=>b.classList.remove("active","yes","no"));
+      const first = seg.querySelector('button[data-set="no"]');
+      if(first) first.classList.add("active","no");
+    });
+
+    // fotos
+    Object.keys(photoState).forEach(k=>delete photoState[k]);
+    document.querySelectorAll(".ph").forEach(inp=>inp.value="");
+    document.querySelectorAll(".thumb").forEach(img=>{img.src=""; img.style.display="none";});
+
+    $("out").textContent = "Todavía no generaste el informe.";
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+</script>
+
+</body>
+</html>
